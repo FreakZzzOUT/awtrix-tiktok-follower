@@ -5,13 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AWTRIX TikTok Follower</title>
 </head>
+
 <body>
+
   <h1>AWTRIX TikTok Follower</h1>
 
   <p>
-    AWTRIX TikTok Follower ist ein privates Projekt zur Anzeige
-    von TikTok-Kontoinformationen auf einem AWTRIX-Display.
+    Privates Projekt zur Anzeige meiner TikTok-Followerzahl
+    auf meinem AWTRIX-Display.
   </p>
+
+  <button id="tiktokLogin">
+    Mit TikTok verbinden
+  </button>
 
   <p>
     <a href="privacy.html">Datenschutzerklärung</a>
@@ -20,5 +26,37 @@
   <p>
     <a href="terms.html">Nutzungsbedingungen</a>
   </p>
+
+  <script>
+    const clientKey = "sbawhljvq5s008o614";
+
+    const redirectUri =
+      "https://freakzzzout.github.io/awtrix-tiktok-follower/callback.html";
+
+    document.getElementById("tiktokLogin").addEventListener("click", () => {
+
+      const stateArray = new Uint32Array(4);
+      crypto.getRandomValues(stateArray);
+
+      const state = Array.from(stateArray)
+        .map(n => n.toString(16))
+        .join("");
+
+      sessionStorage.setItem("tiktok_oauth_state", state);
+
+      const scope = "user.info.basic,user.info.stats";
+
+      const url =
+        "https://www.tiktok.com/v2/auth/authorize/" +
+        "?client_key=" + encodeURIComponent(clientKey) +
+        "&response_type=code" +
+        "&scope=" + encodeURIComponent(scope) +
+        "&redirect_uri=" + encodeURIComponent(redirectUri) +
+        "&state=" + encodeURIComponent(state);
+
+      window.location.href = url;
+    });
+  </script>
+
 </body>
 </html>
