@@ -1,12 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TikTok Login – AWTRIX</title>
 </head>
+
 <body>
-  <h1>TikTok Login successful</h1>
-  <p>You can now return to your AWTRIX TikTok Follower application.</p>
+  <h1>AWTRIX TikTok Follower</h1>
+  <p id="status">TikTok-Verbindung wird hergestellt...</p>
+
+  <script>
+    const workerUrl =
+      "https://awtrix-tiktok-follower.freakzzzout-gaming.workers.dev/token";
+
+    async function connectTikTok() {
+      const params = new URLSearchParams(window.location.search);
+
+      const code = params.get("code");
+      const returnedState = params.get("state");
+      const savedState = sessionStorage.getItem("tiktok_oauth_state");
+
+      if (!code) {
+        document.getElementById("status").textContent =
+          "Fehler: Kein TikTok-Autorisierungscode erhalten.";
+        return;
+      }
+
+      if (!returnedState || returnedState !== savedState) {
+        document.getElementById("status").textContent =
+          "Fehler: Ungültiger Login-Status.";
+        return;
+      }
+
+      try {
+        const response = await fetch(workerUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ code: code })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.access_token) {
+          document.getElementById("status").textContent =
+            "TikTok-Verbindung fehlgeschlagen: " +
+            (data.error_description || data.error || "Unbekannter Fehler");
+          return;
+        }
+
+        sessionStorage.removeItem("tiktok_oauth_state");
+
+        document.getElementById("status").textContent =
+          "TikTok erfolgreich verbunden!";
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "Fehler beim Verbinden mit TikTok.";
+      }
+    }
+
+    connectTikTok();
+  </script>
 </body>
 </html>
