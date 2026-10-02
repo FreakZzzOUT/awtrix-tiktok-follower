@@ -44,7 +44,7 @@
 
         const data = await response.json();
 
-        if (!response.ok || !data.success) { {
+        if (!response.ok || !data.success) {
           document.getElementById("status").textContent =
             "TikTok-Verbindung fehlgeschlagen: " +
             (data.error_description || data.error || "Unbekannter Fehler");
